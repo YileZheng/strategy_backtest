@@ -52,15 +52,15 @@ class backtest_engine():
         prc = price[SYMBOLS].values
         open_pos = target_position*prc
         
-        self.net_value = self.cash + self.cur_pos*prc
-        self.market_value = open_pos
-        self.cash = self.net_value - self.market_value
+        # self.net_value = self.cash + self.cur_pos*prc
+        # self.market_value = open_pos
+        # self.cash = self.net_value - self.market_value
         self.cur_pos = target_position
 
 
         self.pnl = self.pnl.append({'date':dt, 'value':open_pos}, ignore_index=True)
         self.pos_his = self.pos_his.append(dict(zip(['date']+SYMBOLS, [dt]+target_position)), ignore_index=True)
-        print(f"date {dt}, cash:{}, pnl: {}, postion: {target_position}")
+        print(f"date {dt}") #", cash:{}, pnl: {}, postion: {target_position}")
 
     def strategy(self, data):
         target_position = [1]* len(SYMBOLS)
@@ -73,7 +73,7 @@ class backtest_engine():
     def trading_engine(self):
         for backtest_data in self.data_player_gen:
             tod_price = backtest_data.iloc[-1].loc[(SYMBOLS, 'last')]
-            today_dt = backtest_data.iloc[-1].index
+            today_dt = backtest_data.iloc[-1].name
             his_data = backtest_data.iloc[:-1]
             target_position = self.strategy(his_data)
             self.portfolio_manager(target_position, today_dt, tod_price)
