@@ -8,7 +8,7 @@ data_pool = data_pool.swaplevel(1,0, axis=1)
 
 # backtest config
 
-WINDOW = 14
+WINDOW = 20
 SYMBOLS = data_pool.columns.get_level_values(0).unique().tolist()
 DATE_START = datetime(2013,1,8)
 DATE_END = datetime(2020,1,8)
@@ -48,7 +48,7 @@ class backtest_engine():
     
 
     def portfolio_manager(self, target_position, dt, price):
-        assert len(target_position)==len(self.symbols)
+        assert len(target_position)==len(self.symbols), "wrong position shape"
 
         prc = price[self.symbols].fillna(0).values
         open_pos = np.dot(target_position, prc)
@@ -64,16 +64,7 @@ class backtest_engine():
         print(f"Date - {dt.date()}, net_value: {self.net_value}, \tmarket_value: {self.market_value}, \tcash:{self.cash}")
 
     def strategy(self, data):
-        # mind to deal with NaN value, the engine only stream in what is provided, not preprocessing
-        position = pd.DataFrame(columns=self.symbols)
-        price = data.loc[:, (slice(None), 'last')]
-        volume = data.loc[:, (slice(None), 'volume')]
-
-        position = position.fillna(0)
-        value = data.iloc[-1].loc[(slice(None), 'last')].apply(lambda x: int(~np.isnan(x)))
-
-        target_position = value[self.symbols].values
-        return target_position
+        pass
     
     def end_backtest(self):
         self.pnl_his.to_csv('pnl.csv', index=False)
